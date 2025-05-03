@@ -25,7 +25,7 @@ namespace KBT
         void Start()
         {
             textPrinter.PlayLine($"asdgfoijsfovidejr hto pidjk \nfmogeijg mso wr\nekjroighjsoer tijeor\nifgjas dgfoijsf ovidejrhto pidjkfmogeijg msowrekjro ighjsoertijeori fgjasdgfoi jsfovidejrhtopidjkfmogeijgmsowrekjroighjsoertijeorifgjasdgfoijsfovidejrhtopidjkfmogeijgmsowrekjroighjsoertijeorifgj");
-            Character("Test", characterSprite, new List<float>() { 0.5f, 0.5f });
+            Character("Test", characterSprite, new List<float>() { 1f, 0.5f });
             updateLayout();
         }
 
