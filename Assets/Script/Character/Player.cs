@@ -11,12 +11,15 @@ public enum MoveDirect
 
 public class Player : MapCharacterBase
 {
-    [SerializeField] private MoveModel moveModel = null;
+    public MoveModel moveModel = null;
+    public EventModel eventModel = null;
 
     void Awake()
     {
         moveModel.Init(this);
         moveModel.UpdateTargetPosition(transform.position);
+
+        eventModel.Init(this, moveModel);
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -33,6 +36,8 @@ public class Player : MapCharacterBase
         if (Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKey(KeyCode.RightArrow)) moveModel.Move(MoveDirect.Right);
         if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKey(KeyCode.UpArrow)) moveModel.Move(MoveDirect.Up);
         if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKey(KeyCode.DownArrow)) moveModel.Move(MoveDirect.Down);
+
+        if (Input.GetKeyDown(KeyCode.Z)) eventModel.TryTriggerEvent();
 
     }
 

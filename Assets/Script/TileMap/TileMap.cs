@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -6,7 +7,7 @@ public class TileMap : MonoBehaviour
 {
     [SerializeField] public TilemapCollider2D movableTilemap;
 
-    public CompositeCollider2D compositeCollider2D = null;
+    [NonSerialized] public CompositeCollider2D compositeCollider2D = null;
 
     void Start()
     {

@@ -18,17 +18,20 @@ public class MovableTilemap
 
 public class MoveModel : CharacterModelBase
 {
-    private Dictionary<int, TileMap> movableColliderMap = new Dictionary<int, TileMap>();
-    private Rigidbody2D rgd2D => GetComponent<Rigidbody2D>();
+    public Rigidbody2D Rgd2D => GetComponent<Rigidbody2D>();
+    public MoveDirect Direction => directiion;
+    public float PerStepDistance => perStepDistance;
+    public TileMap tileMapSetting => movableColliderMap[layer];
+    [NonSerialized] public UnityEvent<MoveDirect> onDirectionChanged = null;
 
     [Tooltip("每步的距離，取絕對值。(0, 0)表示無最小步數，可以隨意移動")]
     [SerializeField] private MoveDirect defaultDirect = MoveDirect.Down;
-    [SerializeField] private Vector2 stepSize = Vector2.one;
+    [SerializeField] private float perStepDistance = 1;
     [SerializeField] private bool canMoveAnywhere = false;
     [SerializeField] private List<MovableTilemap> movableTilemaps = new List<MovableTilemap>();
     [SerializeField] private float moveSpeed = 10;
 
-    [NonSerialized] public UnityEvent<MoveDirect> onDirectionChanged = null;
+    private Dictionary<int, TileMap> movableColliderMap = new Dictionary<int, TileMap>();
 
     /// <summary>
     /// 決定目標位置時的當前位置
@@ -72,6 +75,8 @@ public class MoveModel : CharacterModelBase
                 }
             });
         }
+
+        SetLayer(layer);
     }
 
     // Update is called once per frame
@@ -103,18 +108,13 @@ public class MoveModel : CharacterModelBase
         }
     }
 
-    public override void Init(MapCharacterBase characterBase)
-    {
-        base.Init(characterBase);
-    }
-
     public void UpdateTargetPosition(Vector2 _targetPosition)
     {
         previousPosition = applyCharacter.transform.position;
 
         if (!canMoveAnywhere)
         {
-            rgd2D.Cast(_targetPosition - previousPosition, results, 1);
+            Rgd2D.Cast(_targetPosition - previousPosition, results, perStepDistance);
             if (!isCastingInLayer())
             {
                 targetPosition = _targetPosition;
@@ -143,10 +143,10 @@ public class MoveModel : CharacterModelBase
 
             if (!canMoveAnywhere)
             {
-                rgd2D.Cast(getDirect(direct), results, 1);
+                Rgd2D.Cast(GetDirect(direct), results, perStepDistance);
                 if (!isCastingInLayer())
                 {
-                    targetPosition += getDirect(direct);
+                    targetPosition += GetDirect(direct);
                 }
                 else
                 {
@@ -159,20 +159,43 @@ public class MoveModel : CharacterModelBase
     public void SetLayer(int _layer)
     {
         layer = _layer;
+
+        if (tag == "PlayerModel")
+        {
+            applyCharacter.GetComponent<SpriteRenderer>().sortingOrder = layer;
+
+            movableTilemaps.ForEach(setting =>
+            {
+                if (setting.layer > layer)
+                {
+                    setting.tileMap.GetComponentsInChildren<Tilemap>(true).ToList().ForEach(map =>
+                    {
+                        map.color = new Color(1, 1, 1, 0.5f);
+                    });
+                }
+                else
+                {
+                    setting.tileMap.GetComponentsInChildren<Tilemap>(true).ToList().ForEach(map =>
+                    {
+                        map.color = Color.white;
+                    });
+                }
+            });
+        }
     }
 
-    private Vector2 getDirect(MoveDirect direct)
+    public Vector2 GetDirect(MoveDirect direct)
     {
         switch (direct)
         {
             case MoveDirect.Left:
-                return new Vector2(-Mathf.Abs(stepSize.x), 0);
+                return new Vector2(-Mathf.Abs(perStepDistance), 0);
             case MoveDirect.Right:
-                return new Vector2(Mathf.Abs(stepSize.x), 0);
+                return new Vector2(Mathf.Abs(perStepDistance), 0);
             case MoveDirect.Up:
-                return new Vector2(0, Mathf.Abs(stepSize.y));
+                return new Vector2(0, Mathf.Abs(perStepDistance));
             case MoveDirect.Down:
-                return new Vector2(0, -Mathf.Abs(stepSize.y));
+                return new Vector2(0, -Mathf.Abs(perStepDistance));
         }
         return Vector2.zero;
     }
