@@ -31,7 +31,6 @@ public class EventModel : CharacterModelBase
         int triggerIndex = results.FindIndex(result =>
             result.collider.gameObject.tag == "TileEvent" && moveModel.tileMapSetting.movableTilemap.transform.Equals(result.collider.transform.parent)
         );
-        Debug.Log(triggerIndex);
         if (triggerIndex != -1)
         {
             results[triggerIndex].collider.GetComponent<TileEvent>().TriggerEvent(transform.position, moveModel.Direction);

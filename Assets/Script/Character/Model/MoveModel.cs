@@ -21,8 +21,11 @@ public class MoveModel : CharacterModelBase
     public Rigidbody2D Rgd2D => GetComponent<Rigidbody2D>();
     public MoveDirect Direction => directiion;
     public float PerStepDistance => perStepDistance;
+    public float Speed => isRunning ? moveSpeed * 2 : moveSpeed;
+    public bool IsRunning => isRunning;
+    public bool IsMoving => moveDirect != MoveDirect.None;
     public TileMap tileMapSetting => movableColliderMap[layer];
-    [NonSerialized] public UnityEvent<MoveDirect> onDirectionChanged = null;
+    [NonSerialized] public UnityEvent<MoveDirect> onDirectionChanged = new UnityEvent<MoveDirect>();
 
     [Tooltip("每步的距離，取絕對值。(0, 0)表示無最小步數，可以隨意移動")]
     [SerializeField] private MoveDirect defaultDirect = MoveDirect.Down;
@@ -56,6 +59,7 @@ public class MoveModel : CharacterModelBase
     private List<RaycastHit2D> results = new List<RaycastHit2D>();
 
     private int layer = 0;
+    private bool isRunning = false;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     protected override void Start()
@@ -63,7 +67,7 @@ public class MoveModel : CharacterModelBase
         base.Start();
 
         directiion = defaultDirect;
-        onDirectionChanged?.Invoke(directiion);
+        onDirectionChanged.Invoke(directiion);
 
         if (!canMoveAnywhere)
         {
@@ -89,19 +93,19 @@ public class MoveModel : CharacterModelBase
             switch (moveDirect)
             {
                 case MoveDirect.Left:
-                    applyCharacter.transform.Translate(Vector2.left * Time.deltaTime * moveSpeed);
+                    applyCharacter.transform.Translate(Vector2.left * Time.deltaTime * Speed);
                     if (applyCharacter.transform.position.x <= targetPosition.x) setCharacterTargetPosition();
                     break;
                 case MoveDirect.Right:
-                    applyCharacter.transform.Translate(Vector2.right * Time.deltaTime * moveSpeed);
+                    applyCharacter.transform.Translate(Vector2.right * Time.deltaTime * Speed);
                     if (applyCharacter.transform.position.x >= targetPosition.x) setCharacterTargetPosition();
                     break;
                 case MoveDirect.Up:
-                    applyCharacter.transform.Translate(Vector2.up * Time.deltaTime * moveSpeed);
+                    applyCharacter.transform.Translate(Vector2.up * Time.deltaTime * Speed);
                     if (applyCharacter.transform.position.y >= targetPosition.y) setCharacterTargetPosition();
                     break;
                 case MoveDirect.Down:
-                    applyCharacter.transform.Translate(Vector2.down * Time.deltaTime * moveSpeed);
+                    applyCharacter.transform.Translate(Vector2.down * Time.deltaTime * Speed);
                     if (applyCharacter.transform.position.y <= targetPosition.y) setCharacterTargetPosition();
                     break;
             }
@@ -138,7 +142,7 @@ public class MoveModel : CharacterModelBase
         {
             moveDirect = direct;
             directiion = moveDirect;
-            onDirectionChanged?.Invoke(directiion);
+            onDirectionChanged.Invoke(directiion);
             previousPosition = applyCharacter.transform.position;
 
             if (!canMoveAnywhere)
@@ -162,7 +166,7 @@ public class MoveModel : CharacterModelBase
 
         if (tag == "PlayerModel")
         {
-            applyCharacter.GetComponent<SpriteRenderer>().sortingOrder = layer;
+            applyCharacter.GetComponent<Player>().spriteModel.spriteRenderer.sortingOrder = layer;
 
             movableTilemaps.ForEach(setting =>
             {
@@ -182,6 +186,11 @@ public class MoveModel : CharacterModelBase
                 }
             });
         }
+    }
+
+    public void SetRunning(bool _running)
+    {
+        isRunning = _running;
     }
 
     public Vector2 GetDirect(MoveDirect direct)

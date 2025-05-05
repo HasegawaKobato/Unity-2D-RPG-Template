@@ -13,6 +13,7 @@ public class Player : MapCharacterBase
 {
     public MoveModel moveModel = null;
     public EventModel eventModel = null;
+    public SpriteModel spriteModel = null;
 
     void Awake()
     {
@@ -20,6 +21,7 @@ public class Player : MapCharacterBase
         moveModel.UpdateTargetPosition(transform.position);
 
         eventModel.Init(this, moveModel);
+        spriteModel.Init(this, moveModel);
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
