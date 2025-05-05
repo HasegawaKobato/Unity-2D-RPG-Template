@@ -28,12 +28,22 @@ public class EventModel : CharacterModelBase
     public void TryTriggerEvent()
     {
         moveModel.Rgd2D.Cast(moveModel.GetDirect(moveModel.Direction), results, moveModel.PerStepDistance);
-        int triggerIndex = results.FindIndex(result =>
-            result.collider.gameObject.tag == "TileEvent" && moveModel.tileMapSetting.movableTilemap.transform.Equals(result.collider.transform.parent)
-        );
-        if (triggerIndex != -1)
+
+        // NPC事件優先處理
+        int npcTriggerIndex = results.FindIndex(result => result.collider.transform.parent.gameObject.tag == "NPC");
+        if (npcTriggerIndex != -1)
         {
-            results[triggerIndex].collider.GetComponent<TileEvent>().TriggerEvent(transform.position, moveModel.Direction);
+            results[npcTriggerIndex].collider.transform.parent.GetComponent<NPC>().TriggerEvent(transform.position, moveModel);
+        }
+        else
+        {
+            int triggerIndex = results.FindIndex(result =>
+                result.collider.gameObject.tag == "TileEvent" && moveModel.tileMapSetting.movableTilemap.transform.Equals(result.collider.transform.parent)
+            );
+            if (triggerIndex != -1)
+            {
+                results[triggerIndex].collider.GetComponent<TileEvent>().TriggerEvent(transform.position, moveModel.Direction);
+            }
         }
     }
 

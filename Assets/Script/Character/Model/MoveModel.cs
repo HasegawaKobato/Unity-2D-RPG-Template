@@ -26,6 +26,7 @@ public class MoveModel : CharacterModelBase
     public bool IsMoving => moveDirect != MoveDirect.None;
     public TileMap tileMapSetting => movableColliderMap[layer];
     [NonSerialized] public UnityEvent<MoveDirect> onDirectionChanged = new UnityEvent<MoveDirect>();
+    [NonSerialized] public UnityEvent<Collision2D> onColiisionEnter = new UnityEvent<Collision2D>();
 
     [Tooltip("每步的距離，取絕對值。(0, 0)表示無最小步數，可以隨意移動")]
     [SerializeField] private MoveDirect defaultDirect = MoveDirect.Down;
@@ -193,6 +194,12 @@ public class MoveModel : CharacterModelBase
         isRunning = _running;
     }
 
+    public void ChangeDirection(MoveDirect direct) {
+        if (IsMoving) return;
+        directiion = direct;
+        onDirectionChanged.Invoke(directiion);
+    }
+
     public Vector2 GetDirect(MoveDirect direct)
     {
         switch (direct)
@@ -207,6 +214,11 @@ public class MoveModel : CharacterModelBase
                 return new Vector2(0, -Mathf.Abs(perStepDistance));
         }
         return Vector2.zero;
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        onColiisionEnter.Invoke(collision);
     }
 
     private void setCharacterTargetPosition()
