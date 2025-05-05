@@ -241,16 +241,8 @@ namespace KBT
         [Obsolete]
         private void dialogComponent(int i)
         {
-            viewDialogs[i].dialogData.contentLayout = (DialogContentLayout)EditorGUILayout.EnumPopup(viewDialogs[i].dialogData.contentLayout, new GUIStyle(EditorStyles.popup) { fixedWidth = 150 });
 
             GUILayout.BeginHorizontal();
-
-            if (viewDialogs[i].dialogData.contentLayout == DialogContentLayout.AvatarLeft)
-            {
-                GUILayout.BeginVertical(new GUIStyle() { fixedWidth = 100 });
-                viewDialogs[i].dialogData.avatar = (Sprite)EditorGUILayout.ObjectField("", viewDialogs[i].dialogData.avatar, typeof(Sprite));
-                GUILayout.EndVertical();
-            }
 
             GUILayout.BeginVertical();
             GUILayout.BeginHorizontal();
@@ -259,13 +251,6 @@ namespace KBT
             GUILayout.EndHorizontal();
             viewDialogs[i].dialogData.dialogContent = EditorGUILayout.TextArea(viewDialogs[i].dialogData.dialogContent, new GUIStyle(EditorStyles.textArea) { fixedHeight = 70 });
             GUILayout.EndVertical();
-
-            if (viewDialogs[i].dialogData.contentLayout == DialogContentLayout.AvatarRight)
-            {
-                GUILayout.BeginVertical(new GUIStyle() { fixedWidth = 100 });
-                viewDialogs[i].dialogData.avatar = (Sprite)EditorGUILayout.ObjectField("", viewDialogs[i].dialogData.avatar, typeof(Sprite));
-                GUILayout.EndVertical();
-            }
 
             GUILayout.EndHorizontal();
         }

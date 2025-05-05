@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 namespace KBT
@@ -7,9 +8,13 @@ namespace KBT
     [RequireComponent(typeof(Text))]
     public class TextPrinter : MonoBehaviour
     {
-        private Text dialogText => GetComponent<Text>();
         public bool isPrintOver => tmpText.Length >= line.Length;
+        public UnityEvent onPrintEnd = new UnityEvent();
 
+        private Text dialogText => GetComponent<Text>();
+
+        private float nextCharInterval = 0.01f;
+        private float timer = 0;
         private string line = "";
         private string tmpText = "";
 
@@ -23,7 +28,13 @@ namespace KBT
         // Update is called once per frame
         void Update()
         {
-
+            if (!isPrintOver)
+            {
+                if (Time.time - timer > nextCharInterval)
+                {
+                    readyNextChar();
+                }
+            }
         }
 
         public void PlayLine(string _line)
@@ -31,22 +42,27 @@ namespace KBT
             line = _line;
             tmpText = "";
             dialogText.text = tmpText;
-            startPrint();
+            readyNextChar();
         }
 
-        private async void startPrint()
+        public void PlayLine(string _line, float inSeconds)
         {
-            while (!isPrintOver)
-            {
-                nextChar();
-                await Task.Delay(20);
-            }
-            printEnd();
+            line = _line;
+            tmpText = "";
+            dialogText.text = tmpText;
+            nextCharInterval = inSeconds / _line.Length;
+            readyNextChar();
         }
 
-        private async void printEnd()
+        private void readyNextChar()
         {
-            await Task.Delay(1000);
+            timer = Time.time;
+            nextChar();
+        }
+
+        private void printEnd()
+        {
+            onPrintEnd.Invoke();
         }
 
         private void nextChar()
@@ -54,6 +70,11 @@ namespace KBT
             if (!Application.isPlaying) return;
             tmpText += line[tmpText.Length];
             dialogText.text = tmpText;
+
+            if (isPrintOver)
+            {
+                printEnd();
+            }
         }
 
     }

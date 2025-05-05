@@ -19,7 +19,6 @@ namespace KBT
     [Serializable]
     public class DialogData
     {
-        public DialogContentLayout contentLayout = DialogContentLayout.None;
         public Sprite avatar = null;
         public string characterName = "";
         public string dialogContent = "";
