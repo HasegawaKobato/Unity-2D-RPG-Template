@@ -14,6 +14,7 @@ public class TileCharacterDirectionSprites
 public class TileCharacterSpitesheet
 {
     public TileCharacterDirectionSprites down;
+    public TileCharacterDirectionSprites left;
     public TileCharacterDirectionSprites right;
     public TileCharacterDirectionSprites up;
 }
@@ -105,36 +106,28 @@ public class SpriteModel : CharacterModelBase
     private void resetSprite()
     {
         spriteRenderer.sprite = getDefaultSprite(moveModel.Direction);
-        if (moveModel.Direction == MoveDirect.Left)
-        {
-            transform.localScale = new Vector3(-1, 1, 1);
-        }
-        else
-        {
-            transform.localScale = Vector3.one;
-        }
+        transform.localScale = Vector3.one;
     }
 
     private void onDirectionChanged(MoveDirect direct)
     {
         spriteRenderer.sprite = getSpriteFromDirection(direct);
-        if (direct == MoveDirect.Left)
-        {
-            transform.localScale = new Vector3(-1, 1, 1);
-        }
-        else
-        {
-            transform.localScale = Vector3.one;
-        }
+        transform.localScale = Vector3.one;
     }
 
     private Sprite getSpriteFromDirection(MoveDirect direct)
     {
-        if (direct == MoveDirect.Left || direct == MoveDirect.Right)
+        if (direct == MoveDirect.Right)
         {
             if (index == 0 | index == 2) return characterMap[useSpritesheet].right.sprite1;
             if (index == 1) return characterMap[useSpritesheet].right.sprite2;
             if (index == 3) return characterMap[useSpritesheet].right.sprite3;
+        }
+        else if (direct == MoveDirect.Left)
+        {
+            if (index == 0 | index == 2) return characterMap[useSpritesheet].left.sprite1;
+            if (index == 1) return characterMap[useSpritesheet].left.sprite2;
+            if (index == 3) return characterMap[useSpritesheet].left.sprite3;
         }
         else if (direct == MoveDirect.Up)
         {
@@ -153,9 +146,13 @@ public class SpriteModel : CharacterModelBase
 
     private Sprite getDefaultSprite(MoveDirect direct)
     {
-        if (direct == MoveDirect.Left || direct == MoveDirect.Right)
+        if (direct == MoveDirect.Right)
         {
             return characterMap[useSpritesheet].right.sprite1;
+        }
+        else if (direct == MoveDirect.Left)
+        {
+            return characterMap[useSpritesheet].left.sprite1;
         }
         else if (direct == MoveDirect.Up)
         {

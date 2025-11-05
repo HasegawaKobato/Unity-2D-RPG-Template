@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public enum MoveDirect
 {
@@ -15,8 +16,11 @@ public class Player : MapCharacterBase
     public EventModel eventModel = null;
     public SpriteModel spriteModel = null;
 
+    private Vector2 moveOffset = Vector2.zero;
+
     void Awake()
     {
+        InputController.InputActions.Player.Interact.performed += onClickInteract;
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -34,13 +38,18 @@ public class Player : MapCharacterBase
     protected override void Update()
     {
         base.Update();
-        if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKey(KeyCode.LeftArrow)) moveModel.Move(MoveDirect.Left);
-        if (Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKey(KeyCode.RightArrow)) moveModel.Move(MoveDirect.Right);
-        if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKey(KeyCode.UpArrow)) moveModel.Move(MoveDirect.Up);
-        if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKey(KeyCode.DownArrow)) moveModel.Move(MoveDirect.Down);
+        moveOffset = InputController.InputActions.Player.Move.ReadValue<Vector2>();
 
-        if (Input.GetKeyDown(KeyCode.Z)) eventModel.TryTriggerEvent();
+        if (moveOffset.x < 0) moveModel.Move(MoveDirect.Left);
+        if (moveOffset.x > 0) moveModel.Move(MoveDirect.Right);
+        if (moveOffset.y > 0) moveModel.Move(MoveDirect.Up);
+        if (moveOffset.y < 0) moveModel.Move(MoveDirect.Down);
 
+    }
+
+    private void onClickInteract(InputAction.CallbackContext context)
+    {
+        eventModel.TryTriggerEvent();
     }
 
 }

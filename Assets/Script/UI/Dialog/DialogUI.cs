@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 namespace KBT
@@ -30,6 +31,7 @@ namespace KBT
 
         void Awake()
         {
+            InputController.InputActions.Player.Interact.performed += onClickInteract;
             textPrinter.onPrintEnd.AddListener(onPrintEnd);
         }
 
@@ -74,26 +76,6 @@ namespace KBT
                     isShacking = false;
                 }
             }
-
-            if (waitForClick)
-            {
-                if (Input.GetKeyDown(KeyCode.Mouse0))
-                {
-                    if (test == 0)
-                    {
-                        waitForClick = false;
-                        ShackCharacter("Test", 0.3f);
-                        Text($"這是五個字", 3);
-                        Character("Test", characterSprite, new List<float>() { 0.5f, 0.5f });
-                    }
-                    else if (test >= 1)
-                    {
-                        ShackUI(0.3f);
-                    }
-                    test++;
-                }
-            }
-
         }
 
 
@@ -171,6 +153,26 @@ namespace KBT
         public void Text(string _text, float inSeconds)
         {
             textPrinter.PlayLine(_text, inSeconds);
+        }
+
+        private void onClickInteract(InputAction.CallbackContext context)
+        {
+            if (waitForClick)
+            {
+                if (test == 0)
+                {
+                    waitForClick = false;
+                    ShackCharacter("Test", 0.3f);
+                    Text($"這是五個字", 3);
+                    Character("Test", characterSprite, new List<float>() { 0.5f, 0.5f });
+                }
+                else if (test >= 1)
+                {
+                    ShackUI(0.3f);
+                }
+                test++;
+            }
+
         }
 
         private void onPrintEnd()
