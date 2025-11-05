@@ -11,17 +11,17 @@ public class NPC : MapCharacterBase
 
     void Awake()
     {
-        moveModel.Init(this);
-        moveModel.UpdateTargetPosition(transform.position);
-
-        spriteModel.Init(this, moveModel);
-        NPCEventModel.Init(this, moveModel);
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     protected override void Start()
     {
         base.Start();
+        moveModel.Init(this);
+        moveModel.UpdateTargetPosition(transform.position);
+
+        spriteModel.Init(this, moveModel);
+        NPCEventModel.Init(this, moveModel);
         delayRandomTime();
     }
 

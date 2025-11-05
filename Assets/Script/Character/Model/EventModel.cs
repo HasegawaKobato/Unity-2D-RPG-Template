@@ -8,9 +8,9 @@ public class EventModel : CharacterModelBase
 
     private List<RaycastHit2D> results = new List<RaycastHit2D>();
 
-    protected override void Start()
+    protected override void Awake()
     {
-        base.Start();
+        base.Awake();
     }
 
     protected override void Update()
@@ -38,7 +38,7 @@ public class EventModel : CharacterModelBase
         else
         {
             int triggerIndex = results.FindIndex(result =>
-                result.collider.gameObject.tag == "TileEvent" && moveModel.tileMapSetting.movableTilemap.transform.Equals(result.collider.transform.parent)
+                result.collider.gameObject.tag == "TileEvent" && moveModel.TileMapSetting.movableTilemap.transform.Equals(result.collider.transform.parent)
             );
             if (triggerIndex != -1)
             {

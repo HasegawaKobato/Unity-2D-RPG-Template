@@ -49,9 +49,9 @@ public class SpriteModel : CharacterModelBase
     private int index = 0;
     private float timer;
 
-    protected override void Start()
+    protected override void Awake()
     {
-        base.Start();
+        base.Awake();
 
         characters.ForEach(character =>
         {
@@ -94,6 +94,7 @@ public class SpriteModel : CharacterModelBase
         timer = Time.time;
 
         moveModel.onDirectionChanged.AddListener(onDirectionChanged);
+        onDirectionChanged(moveModel.Direction);
     }
 
     public void SetSpritesheet(string newName)

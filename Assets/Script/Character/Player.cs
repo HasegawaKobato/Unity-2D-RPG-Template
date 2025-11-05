@@ -17,17 +17,17 @@ public class Player : MapCharacterBase
 
     void Awake()
     {
-        moveModel.Init(this);
-        moveModel.UpdateTargetPosition(transform.position);
-
-        eventModel.Init(this, moveModel);
-        spriteModel.Init(this, moveModel);
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     protected override void Start()
     {
         base.Start();
+        moveModel.Init(this);
+        moveModel.UpdateTargetPosition(transform.position);
+
+        eventModel.Init(this, moveModel);
+        spriteModel.Init(this, moveModel);
     }
 
     // Update is called once per frame

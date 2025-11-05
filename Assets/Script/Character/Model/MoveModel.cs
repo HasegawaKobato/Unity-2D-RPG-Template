@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Tilemaps;
@@ -24,7 +25,14 @@ public class MoveModel : CharacterModelBase
     public float Speed => isRunning ? moveSpeed * 2 : moveSpeed;
     public bool IsRunning => isRunning;
     public bool IsMoving => moveDirect != MoveDirect.None;
-    public TileMap tileMapSetting => movableColliderMap[layer];
+    public TileMap TileMapSetting
+    {
+        get
+        {
+            if (movableColliderMap.ContainsKey(layer)) return movableColliderMap[layer];
+            return null;
+        }
+    }
     [NonSerialized] public UnityEvent<MoveDirect> onDirectionChanged = new UnityEvent<MoveDirect>();
     [NonSerialized] public UnityEvent<Collision2D> onColiisionEnter = new UnityEvent<Collision2D>();
 
@@ -63,9 +71,9 @@ public class MoveModel : CharacterModelBase
     private bool isRunning = false;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    protected override void Start()
+    protected override void Awake()
     {
-        base.Start();
+        base.Awake();
 
         directiion = defaultDirect;
         onDirectionChanged.Invoke(directiion);
@@ -80,8 +88,6 @@ public class MoveModel : CharacterModelBase
                 }
             });
         }
-
-        SetLayer(layer);
     }
 
     // Update is called once per frame
@@ -113,6 +119,12 @@ public class MoveModel : CharacterModelBase
         }
     }
 
+    public override void Init(MapCharacterBase characterBase)
+    {
+        base.Init(characterBase);
+        SetLayer(layer);
+    }
+
     public void UpdateTargetPosition(Vector2 _targetPosition)
     {
         previousPosition = applyCharacter.transform.position;
@@ -139,7 +151,7 @@ public class MoveModel : CharacterModelBase
     {
         if (moveDirect != MoveDirect.None) return;
 
-        if (canMoveAnywhere || movableColliderMap[layer] != null)
+        if (canMoveAnywhere || TileMapSetting != null)
         {
             moveDirect = direct;
             directiion = moveDirect;
@@ -194,7 +206,8 @@ public class MoveModel : CharacterModelBase
         isRunning = _running;
     }
 
-    public void ChangeDirection(MoveDirect direct) {
+    public void ChangeDirection(MoveDirect direct)
+    {
         if (IsMoving) return;
         directiion = direct;
         onDirectionChanged.Invoke(directiion);
@@ -229,7 +242,7 @@ public class MoveModel : CharacterModelBase
 
     private bool isCastingInLayer()
     {
-        return results.FindIndex(result => result.collider.Equals(movableColliderMap[layer].compositeCollider2D)) != -1;
+        return results.FindIndex(result => result.collider.Equals(TileMapSetting.compositeCollider2D)) != -1;
     }
 
 }
