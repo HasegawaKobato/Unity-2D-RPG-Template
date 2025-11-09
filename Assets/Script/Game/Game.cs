@@ -2,6 +2,11 @@ using UnityEngine;
 
 public class Game : MonoBehaviour
 {
+    void Awake()
+    {
+        CardBattle.Main.Init();
+    }
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -12,6 +17,9 @@ public class Game : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            CardBattle.Main.StartBattle();
+        }
     }
 }
