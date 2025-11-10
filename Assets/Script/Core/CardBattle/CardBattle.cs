@@ -10,18 +10,18 @@ namespace CardBattle
     {
         public static CardBattleUI UI => ui;
         public static CardBattleRuntime Runtime => runtime;
+        public static CardBattleResources Resources => resources;
+        public static CardBattleRecord Record => record;
 
-        private static Dictionary<ResourcesType, GameObject> activeObjects = new Dictionary<ResourcesType, GameObject>();
-        private static Dictionary<ResourcesType, GameObject> resourceGameObjects = new Dictionary<ResourcesType, GameObject>();
-        private static Dictionary<ResourcesType, ResourceRequest> resourceRequests = new Dictionary<ResourcesType, ResourceRequest>();
         private static CardBattleUI ui = null;
         private static CardBattleRuntime runtime = new CardBattleRuntime();
+        private static CardBattleResources resources = new CardBattleResources();
+        private static CardBattleRecord record = new CardBattleRecord();
 
         public static void Init()
         {
-            load(ResourcesType.UI);
-            load(ResourcesType.HoldingCard);
-            load(ResourcesType.SubmitCard);
+            resources.Init();
+            record.Init();
         }
 
         public static void StartBattle()
@@ -29,7 +29,7 @@ namespace CardBattle
             InputController.InputActions.Player.Disable();
             InputController.InputActions.UI.Enable();
 
-            ui = getUI<CardBattleUI>(ResourcesType.UI);
+            ui = resources.GetUI<CardBattleUI>(ResourcesType.UI);
             runtime.Init();
             ui.Init();
         }
@@ -44,7 +44,6 @@ namespace CardBattle
             ui.SubmitCards.ForEach(card => totalCost += Config.Card[card].cost);
             if (Config.Card[holdingCard.Type].cost + totalCost <= runtime.ActionMaxPoint)
             {
-                // TODO: 這裡到時候要從卡池紀錄中取得最大行動佇列數量並予以限制
                 ui.AddSubmitCard(holdingCard.Type);
                 GameObject.Destroy(holdingCard.gameObject);
                 ui.UpdateActionPoint();
@@ -82,7 +81,6 @@ namespace CardBattle
                 runtime.ChangeActinoPoint(-Config.Card[selfAction].cost);
                 ui.Action();
 
-                Debug.Log($"Player: {selfAction}, Enemy: {enemyAction}");
                 /// MEMO: 由我方先攻，判斷優先順序後再由對方攻擊，並以同樣方式判斷
                 /// 1. 是否為無效對象
                 /// 2. 是否為減傷對象
@@ -91,7 +89,7 @@ namespace CardBattle
 
                 if (Config.Card[selfAction].invalidCards.Contains(enemyAction))
                 {
-                    // MEMO: 此行動無效，對方也不會有任何損失，直接進入下個行動
+                    // MEMO: 此行動無效，對方也不會有任何損失，直接進入下個行動，也不計入正常使用
                 }
                 else if (Config.Card[selfAction].halfCards.Contains(enemyAction) && runtime.EnemyStamina > 0)
                 {
@@ -102,6 +100,7 @@ namespace CardBattle
                         runtime.ChangeEnemyHp(-Config.Card[selfAction].value / 2);
                         runtime.ChangeEnemyStamina(-Config.Card[selfAction].resistDamage);
                     }
+                    record.Used(selfAction);
                 }
                 else if (Config.Card[selfAction].criticleCards.Contains(enemyAction))
                 {
@@ -111,6 +110,7 @@ namespace CardBattle
                         // MEMO: 此行動我方攻擊力2倍
                         runtime.ChangeEnemyHp(-Config.Card[selfAction].value * 2);
                     }
+                    record.Used(selfAction);
                 }
                 else
                 {
@@ -122,10 +122,10 @@ namespace CardBattle
                             runtime.ChangeEnemyHp(-Config.Card[selfAction].value);
                         }
                     }
+                    record.Used(selfAction);
                 }
 
                 ui.UpdateInfo();
-
                 battleStatus = runtime.GetBattleStatus();
                 if (battleStatus != BattleStatus.None) break;
 
@@ -165,6 +165,8 @@ namespace CardBattle
                 }
 
                 ui.UpdateInfo();
+                battleStatus = runtime.GetBattleStatus();
+                if (battleStatus != BattleStatus.None) break;
 
                 await Task.Delay(1000);
             }
@@ -185,76 +187,6 @@ namespace CardBattle
                 case BattleStatus.Lose:
                     break;
             }
-        }
-
-        public static GameObject Get(ResourcesType resourcesType)
-        {
-            if (resourceGameObjects.ContainsKey(resourcesType) && resourceGameObjects[resourcesType] != null)
-            {
-                return resourceGameObjects[resourcesType];
-            }
-            else
-            {
-                Debug.LogWarning($"此資源尚未讀取，請改使用Load: {resourcesType}");
-                return null;
-            }
-        }
-
-        private static void load(ResourcesType ResourcesType, Action<ResourcesType, GameObject> callback = null)
-        {
-            ResourceRequest resourceRequest = Resources.LoadAsync(Path.Combine("Prefabs", Config.UIResoucesPath[ResourcesType]));
-            void onCompleted(AsyncOperation asyncOperation)
-            {
-                if (resourceRequest.asset != null)
-                {
-                    GameObject mapGameObject = (GameObject)resourceRequest.asset;
-                    resourceGameObjects.Add(ResourcesType, mapGameObject);
-                    if (resourceRequests.ContainsKey(ResourcesType))
-                    {
-                        resourceRequests.Remove(ResourcesType);
-                    }
-                    callback?.Invoke(ResourcesType, mapGameObject);
-                }
-                else
-                {
-                    Debug.LogWarning($"找不到資源: {ResourcesType}");
-                }
-            }
-            resourceRequest.completed += onCompleted;
-            if (!resourceGameObjects.ContainsKey(ResourcesType))
-            {
-                if (!resourceRequests.ContainsKey(ResourcesType))
-                {
-                    resourceRequests.Add(ResourcesType, resourceRequest);
-                }
-                else
-                {
-                    Debug.LogWarning($"讀取中，請勿嘗試再次讀取: {ResourcesType}");
-                }
-            }
-            else
-            {
-                callback.Invoke(ResourcesType, resourceGameObjects[ResourcesType]);
-            }
-        }
-
-        private static T getUI<T>(ResourcesType resourcesType) where T : Component
-        {
-            if (!activeObjects.ContainsKey(resourcesType))
-            {
-                GameObject newObject = GameObject.Instantiate(Get(resourcesType));
-                T comp = newObject.GetComponent<T>();
-                // comp.transform.SetParent(parent);
-                comp.transform.localPosition = Vector3.zero;
-                comp.transform.localScale = Vector3.one;
-                // comp.GetComponent<RectTransform>().anchorMax = Vector2.one;
-                // comp.GetComponent<RectTransform>().anchorMin = Vector2.zero;
-                // comp.GetComponent<RectTransform>().offsetMax = Vector2.zero;
-                // comp.GetComponent<RectTransform>().offsetMin = Vector2.zero;
-                activeObjects.Add(resourcesType, newObject);
-            }
-            activeObjects[resourcesType].transform.SetAsLastSibling();
-            return activeObjects[resourcesType].GetComponent<T>();
         }
 
     }

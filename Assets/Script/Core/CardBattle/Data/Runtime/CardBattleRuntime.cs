@@ -52,13 +52,10 @@ namespace CardBattle
 
         public void RefreshCard()
         {
-            // TODO: 這裡到時候要從卡池紀錄中複製一份並隨機排序
+            // MEMO: 目前手牌是從卡池紀錄中複製一份並隨機排序
             holdingCard = new List<CardType>();
-            List<CardType> tmpOwnCard = new List<CardType>()
-            {
-                CardType.Attack, CardType.Defence, CardType.TakeBreak, CardType.Avoid
-            };
-            while (tmpOwnCard.Count > 0)
+            List<CardType> tmpOwnCard = new List<CardType>(Main.Record.OwnCards);
+            while (tmpOwnCard.Count > 0 && holdingCard.Count < 3)
             {
                 int index = Random.Range(0, tmpOwnCard.Count);
                 holdingCard.Add(tmpOwnCard[index]);
@@ -71,7 +68,7 @@ namespace CardBattle
             {
                 CardType.Attack, CardType.Defence, CardType.TakeBreak, CardType.Avoid
             };
-            while (tmpEnemyCard.Count > 1)
+            while (tmpEnemyCard.Count > 0 && enemyCard.Count < 3)
             {
                 int index = Random.Range(0, tmpEnemyCard.Count);
                 enemyCard.Add(tmpEnemyCard[index]);

@@ -151,11 +151,16 @@ namespace CardBattle
         {
             recycleSubmitCard();
             recycleHoldingCard();
-            // TODO: 這裡到時候的出牌數量要以紀錄為主
-            Main.Runtime.HoldingCard.ForEach(card =>
+
+            for (int i = 0; i < Main.Record.MaxHoldingCard; i++)
             {
-                AddHoldingCard(card);
-            });
+                if (i < Main.Runtime.HoldingCard.Count)
+                {
+                    AddHoldingCard(Main.Runtime.HoldingCard[i]);
+                }
+            }
+
+            // TODO: 這裡到時候要從外部傳入的敵人資料來決定行動佇列
             Main.Runtime.EnemyCard.ForEach(card =>
             {
                 AddEnemySubmitCard(card);
@@ -194,7 +199,7 @@ namespace CardBattle
             }
             else
             {
-                resultObject = Instantiate(Main.Get(ResourcesType.SubmitCard));
+                resultObject = Instantiate(Main.Resources.Get(ResourcesType.SubmitCard));
                 return resultObject;
             }
         }
@@ -222,7 +227,7 @@ namespace CardBattle
             }
             else
             {
-                resultObject = Instantiate(Main.Get(ResourcesType.HoldingCard));
+                resultObject = Instantiate(Main.Resources.Get(ResourcesType.HoldingCard));
                 return resultObject;
             }
         }

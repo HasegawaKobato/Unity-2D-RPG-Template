@@ -11,6 +11,16 @@ namespace CardBattle
         public int maxSubmitCard = 3;
         public int maxHoldingCard = 5;
 
+        public CardRecord() { }
+        
+        public CardRecord(CardRecord record)
+        {
+            baseData = new List<CardDataRecord>(record.baseData);
+            ownCards = new List<CardType>(record.ownCards);
+            maxSubmitCard = record.maxSubmitCard;
+            maxHoldingCard = record.maxHoldingCard;
+        }
+
     }
 
 }
