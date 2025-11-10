@@ -47,6 +47,7 @@ namespace CardBattle
                 // TODO: 這裡到時候要從卡池紀錄中取得最大行動佇列數量並予以限制
                 ui.AddSubmitCard(holdingCard.Type);
                 GameObject.Destroy(holdingCard.gameObject);
+                ui.UpdateActionPoint();
             }
         }
 
@@ -57,7 +58,8 @@ namespace CardBattle
         public static void Recall(SubmitCard submitCard)
         {
             ui.AddHoldingCard(submitCard.Type);
-            GameObject.Destroy(submitCard.gameObject);
+            GameObject.DestroyImmediate(submitCard.gameObject);
+            ui.UpdateActionPoint();
         }
 
         /// <summary>
@@ -67,14 +69,18 @@ namespace CardBattle
         {
             List<CardType> submitCards = new List<CardType>(ui.SubmitCards);
             List<CardType> enemySubmitCards = new List<CardType>(ui.EnemySubmitCards);
-
             int maxActionCount = Math.Max(submitCards.Count, enemySubmitCards.Count);
+
+            BattleStatus battleStatus = BattleStatus.None;
             for (int i = 0; i < maxActionCount; i++)
             {
                 CardType selfAction = CardType.None;
                 if (i < submitCards.Count) selfAction = submitCards[i];
                 CardType enemyAction = CardType.None;
                 if (i < enemySubmitCards.Count) enemyAction = enemySubmitCards[i];
+
+                runtime.ChangeActinoPoint(-Config.Card[selfAction].cost);
+                ui.Action();
 
                 Debug.Log($"Player: {selfAction}, Enemy: {enemyAction}");
                 /// MEMO: 由我方先攻，判斷優先順序後再由對方攻擊，並以同樣方式判斷
@@ -108,20 +114,76 @@ namespace CardBattle
                 }
                 else
                 {
-                    float hit = UnityEngine.Random.Range(0f, 1f);
-                    if (hit <= Config.Card[selfAction].hitRate)
+                    if (Config.Card[selfAction].category == CardCategory.Attack)
                     {
-                        // MEMO: 此行動我方攻擊力2倍
-                        runtime.ChangeEnemyHp(-Config.Card[selfAction].value);
+                        float hit = UnityEngine.Random.Range(0f, 1f);
+                        if (hit <= Config.Card[selfAction].hitRate)
+                        {
+                            runtime.ChangeEnemyHp(-Config.Card[selfAction].value);
+                        }
                     }
                 }
 
-                runtime.ChangeActinoPoint(-Config.Card[selfAction].cost);
+                ui.UpdateInfo();
 
-                ui.ActionOver();
+                battleStatus = runtime.GetBattleStatus();
+                if (battleStatus != BattleStatus.None) break;
+
+                if (Config.Card[enemyAction].invalidCards.Contains(selfAction))
+                {
+                    // MEMO: 此行動無效，對方也不會有任何損失，直接進入下個行動
+                }
+                else if (Config.Card[enemyAction].halfCards.Contains(selfAction) && runtime.EnemyStamina > 0)
+                {
+                    float hit = UnityEngine.Random.Range(0f, 1f);
+                    if (hit <= Config.Card[enemyAction].hitRate)
+                    {
+                        // MEMO: 此行動我方攻擊力減半，但會消耗對方耐力
+                        runtime.ChangeHp(-Config.Card[enemyAction].value / 2);
+                        runtime.ChangeStamina(-Config.Card[enemyAction].resistDamage);
+                    }
+                }
+                else if (Config.Card[enemyAction].criticleCards.Contains(selfAction))
+                {
+                    float hit = UnityEngine.Random.Range(0f, 1f);
+                    if (hit <= Config.Card[enemyAction].hitRate)
+                    {
+                        // MEMO: 此行動我方攻擊力2倍
+                        runtime.ChangeHp(-Config.Card[enemyAction].value * 2);
+                    }
+                }
+                else
+                {
+                    if (Config.Card[enemyAction].category == CardCategory.Attack)
+                    {
+                        float hit = UnityEngine.Random.Range(0f, 1f);
+                        if (hit <= Config.Card[enemyAction].hitRate)
+                        {
+                            runtime.ChangeHp(-Config.Card[enemyAction].value);
+                        }
+                    }
+                }
+
                 ui.UpdateInfo();
 
                 await Task.Delay(1000);
+            }
+
+            ActionOver(battleStatus);
+        }
+
+        public static void ActionOver(BattleStatus battleStatus)
+        {
+            switch (battleStatus)
+            {
+                case BattleStatus.None:
+                    runtime.RefreshCard();
+                    ui.UpdateCards();
+                    break;
+                case BattleStatus.Win:
+                    break;
+                case BattleStatus.Lose:
+                    break;
             }
         }
 

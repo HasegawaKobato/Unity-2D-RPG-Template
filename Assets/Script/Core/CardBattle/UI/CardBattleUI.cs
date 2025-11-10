@@ -65,8 +65,8 @@ namespace CardBattle
 
         public void Init()
         {
+            UpdateCards();
             UpdateInfo();
-            updateCards();
         }
 
         /// <summary>
@@ -109,7 +109,7 @@ namespace CardBattle
             newItem.Init(cardType);
         }
 
-        public void ActionOver()
+        public void Action()
         {
             if (submitContent.childCount > 0)
             {
@@ -136,11 +136,18 @@ namespace CardBattle
             enemyStaminaText.text = $"{Main.Runtime.EnemyStamina}";
             hpText.text = $"{Main.Runtime.Hp}";
             staminaText.text = $"{Main.Runtime.Stamina}";
-            actionPointText.text = $"{Main.Runtime.ActionPoint}";
             descriptionText.text = "";
+            UpdateActionPoint();
         }
 
-        private void updateCards()
+        public void UpdateActionPoint()
+        {
+            int totalCost = 0;
+            SubmitCards.ForEach(card => totalCost += Config.Card[card].cost);
+            actionPointText.text = $"{Main.Runtime.ActionMaxPoint - totalCost}";
+        }
+
+        public void UpdateCards()
         {
             recycleSubmitCard();
             recycleHoldingCard();

@@ -17,6 +17,7 @@ namespace CardBattle
             { CardType.None, new CardData() },
 
             { CardType.Attack, new CardData() {
+                category = CardCategory.Attack,
                 value = 2,
                 cost = 2,
                 hitRate = 1,

@@ -9,6 +9,19 @@ namespace CardBattle
         SubmitCard,
     }
 
+    public enum CardCategory
+    {
+        /// <summary>
+        /// 待機類型，不能給予對方傷害
+        /// </summary>
+        Idle,
+
+        /// <summary>
+        /// 攻擊類型，需要給予對方傷害
+        /// </summary>
+        Attack,
+    }
+
     public enum CardType
     {
         None,
@@ -32,5 +45,23 @@ namespace CardBattle
         /// 迴避
         /// </summary>
         Avoid,
+    }
+
+    public enum BattleStatus
+    {
+        /// <summary>
+        /// 戰鬥持續中，未分出勝負
+        /// </summary>
+        None,
+
+        /// <summary>
+        /// 玩家獲勝
+        /// </summary>
+        Win,
+
+        /// <summary>
+        /// 玩家失敗
+        /// </summary>
+        Lose
     }
 }

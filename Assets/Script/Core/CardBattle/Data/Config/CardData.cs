@@ -5,6 +5,8 @@ namespace CardBattle
 {
     public class CardData
     {
+        public CardCategory category = CardCategory.Idle;
+
         /// <summary>
         /// 卡片基礎數值。
         /// </summary>

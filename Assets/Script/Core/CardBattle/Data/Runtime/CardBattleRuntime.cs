@@ -34,19 +34,24 @@ namespace CardBattle
         public void Init()
         {
             // TODO: 這裡到時候要從外側輸入敵人資料進來
-            enemyMaxHp = 100;
-            enemyHp = 100;
+            enemyMaxHp = 10;
+            enemyHp = 10;
             enemyStamina = 1;
             enemyMaxStamina = 1;
 
             // TODO: 這裡到時候要讀取角色資料
-            actionPoint = 3;
-            actionMaxPoint = 3;
-            hp = 100;
-            maxHp = 100;
+            actionPoint = 5;
+            actionMaxPoint = 5;
+            hp = 10;
+            maxHp = 10;
             stamina = 1;
             maxStamina = 1;
 
+            RefreshCard();
+        }
+
+        public void RefreshCard()
+        {
             // TODO: 這裡到時候要從卡池紀錄中複製一份並隨機排序
             holdingCard = new List<CardType>();
             List<CardType> tmpOwnCard = new List<CardType>()
@@ -60,13 +65,13 @@ namespace CardBattle
                 tmpOwnCard.RemoveAt(index);
             }
 
-            // TODO: 這裡到時候要從卡池紀錄中複製一份並隨機排序
+            // TODO: 這裡到時候要從外部傳入的敵人資料中複製一份並隨機排序
             enemyCard = new List<CardType>();
             List<CardType> tmpEnemyCard = new List<CardType>()
             {
                 CardType.Attack, CardType.Defence, CardType.TakeBreak, CardType.Avoid
             };
-            while (tmpEnemyCard.Count > 0)
+            while (tmpEnemyCard.Count > 1)
             {
                 int index = Random.Range(0, tmpEnemyCard.Count);
                 enemyCard.Add(tmpEnemyCard[index]);
@@ -77,16 +82,44 @@ namespace CardBattle
         public void ChangeEnemyHp(int delta)
         {
             enemyHp += delta;
+            if (enemyHp < 0) enemyHp = 0;
+            if (enemyHp > enemyMaxHp) enemyHp = enemyMaxHp;
         }
 
         public void ChangeEnemyStamina(int delta)
         {
             enemyStamina += delta;
+            if (enemyStamina < 0) enemyStamina = 0;
+            if (enemyStamina > enemyMaxStamina) enemyStamina = enemyMaxStamina;
         }
-        
+
+        public void ChangeHp(int delta)
+        {
+            hp += delta;
+            if (hp < 0) hp = 0;
+            if (hp > MaxHp) hp = MaxHp;
+        }
+
+        public void ChangeStamina(int delta)
+        {
+            stamina += delta;
+            if (stamina < 0) stamina = 0;
+            if (stamina > MaxStamina) stamina = MaxStamina;
+        }
+
         public void ChangeActinoPoint(int delta)
         {
             actionPoint += delta;
+            if (actionPoint < 0) actionPoint = 0;
+            if (actionPoint > actionMaxPoint) actionPoint = actionMaxPoint;
         }
+        
+        public BattleStatus GetBattleStatus()
+        {
+            if (enemyHp <= 0) return BattleStatus.Win;
+            if (hp <= 0) return BattleStatus.Lose;
+            return BattleStatus.None;
+        }
+
     }
 }
