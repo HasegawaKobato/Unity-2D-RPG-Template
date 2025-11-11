@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Tilemaps;
+using UnityEngine.UIElements;
 
 [Serializable]
 public class MovableTilemap
@@ -23,6 +24,7 @@ public class MoveModel : CharacterModelBase
     public MoveDirect Direction => directiion;
     public float PerStepDistance => perStepDistance;
     public float Speed => isRunning ? moveSpeed * 2 : moveSpeed;
+    public int Layer => layer;
     public bool IsRunning => isRunning;
     public bool IsMoving => moveDirect != MoveDirect.None;
     public TileMap TileMapSetting
@@ -42,6 +44,27 @@ public class MoveModel : CharacterModelBase
     [SerializeField] private bool canMoveAnywhere = false;
     [SerializeField] private List<MovableTilemap> movableTilemaps = new List<MovableTilemap>();
     [SerializeField] private float moveSpeed = 10;
+
+    private MovePlace _placeCollider = null;
+    /// <summary>
+    /// 移動用的佔位用碰撞器
+    /// </summary>
+    private MovePlace placeCollider
+    {
+        get
+        {
+            if (_placeCollider == null)
+            {
+                GameObject placeObject = new GameObject("MovePlace");
+                placeObject.tag = "MovePlace";
+                placeObject.transform.SetParent(null);
+                placeObject.transform.position = Vector3.one * 100000;
+                _placeCollider = placeObject.AddComponent<MovePlace>();
+                _placeCollider.Init(applyCharacter);
+            }
+            return _placeCollider;
+        }
+    }
 
     private Dictionary<int, TileMap> movableColliderMap = new Dictionary<int, TileMap>();
 
@@ -132,7 +155,7 @@ public class MoveModel : CharacterModelBase
         if (!canMoveAnywhere)
         {
             Rgd2D.Cast(_targetPosition - previousPosition, results, perStepDistance);
-            if (!isCastingInLayer())
+            if (!isCasting())
             {
                 targetPosition = _targetPosition;
             }
@@ -145,6 +168,7 @@ public class MoveModel : CharacterModelBase
         {
             targetPosition = _targetPosition;
         }
+        placeCollider.Enable(targetPosition);
     }
 
     public void Move(MoveDirect direct)
@@ -161,7 +185,7 @@ public class MoveModel : CharacterModelBase
             if (!canMoveAnywhere)
             {
                 Rgd2D.Cast(GetDirect(direct), results, perStepDistance);
-                if (!isCastingInLayer())
+                if (!isCasting())
                 {
                     targetPosition += GetDirect(direct);
                 }
@@ -171,6 +195,7 @@ public class MoveModel : CharacterModelBase
                 }
             }
         }
+        placeCollider.Enable(targetPosition);
     }
 
     public void SetLayer(int _layer)
@@ -238,6 +263,39 @@ public class MoveModel : CharacterModelBase
     {
         applyCharacter.transform.position = targetPosition;
         moveDirect = MoveDirect.None;
+        placeCollider.Disable();
+    }
+
+    private bool isCasting()
+    {
+        bool isCast = false;
+        results.ForEach(result =>
+        {
+            if (result.collider.Equals(TileMapSetting.compositeCollider2D)) isCast = true;
+            if (result.collider.tag == "NPCModel" || result.collider.tag == "PlayerModel")
+            {
+                MoveModel moveModel = result.collider.GetComponent<MoveModel>();
+                if (moveModel != null)
+                {
+                    if (layer == moveModel.Layer) isCast = true;
+                }
+            }
+            if (result.collider.tag == "MovePlace")
+            {
+                MovePlace movePlace = result.collider.GetComponent<MovePlace>();
+                if (movePlace != null)
+                {
+                    MoveModel moveModel = movePlace.Character.GetComponentInChildren<MoveModel>();
+                    if (moveModel != null)
+                    {
+                        if (layer == moveModel.Layer) isCast = true;
+                    }
+                }
+            }
+
+
+        });
+        return isCast;
     }
 
     private bool isCastingInLayer()

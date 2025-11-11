@@ -25,8 +25,8 @@ public class TileEvent : MonoBehaviour
     [SerializeField] private EventTriggerType triggerType = EventTriggerType.Default;
     [Tooltip("僅在Default或Both有效。不與事件重疊時，可接受的玩家面向。None為全接受")]
     [SerializeField] private List<MoveDirect> defaultValidDirect = new List<MoveDirect>() { MoveDirect.None };
-    [SerializeField] private UnityEvent onDefaultTrigger = null;
-    [SerializeField] private UnityEvent onOverlapTrigger = null;
+    [SerializeField, Tooltip("Default, Both時呼叫。需要指定面向")] private UnityEvent onDefaultTrigger = null;
+    [SerializeField, Tooltip("Overlap，Both時呼叫。需要與事件重疊才能觸發")] private UnityEvent onOverlapTrigger = null;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()

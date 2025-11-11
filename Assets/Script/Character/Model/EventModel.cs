@@ -30,7 +30,7 @@ public class EventModel : CharacterModelBase
         moveModel.Rgd2D.Cast(moveModel.GetDirect(moveModel.Direction), results, moveModel.PerStepDistance);
 
         // NPC事件優先處理
-        int npcTriggerIndex = results.FindIndex(result => result.collider.transform.parent.gameObject.tag == "NPC");
+        int npcTriggerIndex = results.FindIndex(result => result.collider.tag == "NPCModel" && result.collider.transform.parent.gameObject.tag == "NPC");
         if (npcTriggerIndex != -1)
         {
             results[npcTriggerIndex].collider.transform.parent.GetComponent<NPC>().TriggerEvent(transform.position, moveModel);

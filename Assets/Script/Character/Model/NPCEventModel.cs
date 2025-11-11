@@ -23,8 +23,8 @@ public enum NPCEventTriggerType
 public class NPCEventModel : CharacterModelBase
 {
     [SerializeField] private NPCEventTriggerType triggerType = NPCEventTriggerType.Default;
-    [SerializeField] private UnityEvent onDefaultTrigger = null;
-    [SerializeField] private UnityEvent onTouchTrigger = null;
+    [SerializeField, Tooltip("玩家主動觸發")] private UnityEvent onDefaultTrigger = null;
+    [SerializeField, Tooltip("接觸觸發")] private UnityEvent onTouchTrigger = null;
 
     private MoveModel moveModel;
     private List<RaycastHit2D> results = new List<RaycastHit2D>();
