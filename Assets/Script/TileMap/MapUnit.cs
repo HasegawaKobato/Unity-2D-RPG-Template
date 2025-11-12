@@ -8,6 +8,7 @@ public class MapUnit : MonoBehaviour
     public List<TileMap> Maps => maps;
 
     [SerializeField] private List<TileMap> maps = new List<TileMap>();
+    [SerializeField] private List<NPC> npcs = new List<NPC>();
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -25,6 +26,11 @@ public class MapUnit : MonoBehaviour
     {
         character.ApplyMap(this);
         character.MoveModel.SetLayer(layer);
+        npcs.ForEach(npc =>
+        {
+            npc.ApplyMap(this);
+            npc.MoveModel.SetLayer();
+        });
         maps.ForEach(tileMap =>
         {
             if (tileMap.Layer > layer)

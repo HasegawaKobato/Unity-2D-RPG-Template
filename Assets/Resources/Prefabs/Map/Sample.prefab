@@ -3028,11 +3028,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3184619018778428263}
-  - component: {fileID: 1624229853965258469}
+  - component: {fileID: 2529514231564947955}
   - component: {fileID: 7742132981838791711}
   - component: {fileID: 3457177759637120999}
   m_Layer: 0
-  m_Name: MoveModel
+  m_Name: NPCMoveModel
   m_TagString: NPCModel
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3053,7 +3053,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 6956420205754588628}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1624229853965258469
+--- !u!114 &2529514231564947955
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -3062,13 +3062,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 949850564609610946}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ad7d31b3973696d4498b5e3a0eec7eeb, type: 3}
+  m_Script: {fileID: 11500000, guid: ded296aa7be34854a98aee2ac9f26a8f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   defaultDirect: 4
   perStepDistance: 1
   canMoveAnywhere: 0
   moveSpeed: 5
+  locateLayer: 0
 --- !u!61 &7742132981838791711
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -3186,6 +3187,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a30693a1d358e25489fedaebf9b1eea4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  targetMap: 0
   targetPosition: {x: -1.5, y: -4.5}
   targetLayer: 1
 --- !u!1 &2073604443654963363
@@ -3252,6 +3254,9 @@ MonoBehaviour:
   maps:
   - {fileID: 1640737148706667267}
   - {fileID: 8935085760718829379}
+  npcs:
+  - {fileID: 7737849812045783150}
+  - {fileID: 6752826570305116504}
 --- !u!1 &2893424983837343628
 GameObject:
   m_ObjectHideFlags: 0
@@ -3261,11 +3266,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3665690885033486506}
-  - component: {fileID: 2803726375255272454}
+  - component: {fileID: 5630436295601008914}
   - component: {fileID: 6871565452021238950}
   - component: {fileID: 8838388117220658085}
   m_Layer: 0
-  m_Name: MoveModel
+  m_Name: NPCMoveModel
   m_TagString: NPCModel
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3286,7 +3291,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 860042938629038922}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2803726375255272454
+--- !u!114 &5630436295601008914
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -3295,13 +3300,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 2893424983837343628}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ad7d31b3973696d4498b5e3a0eec7eeb, type: 3}
+  m_Script: {fileID: 11500000, guid: ded296aa7be34854a98aee2ac9f26a8f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   defaultDirect: 4
   perStepDistance: 1
   canMoveAnywhere: 0
   moveSpeed: 5
+  locateLayer: 0
 --- !u!61 &6871565452021238950
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -3422,9 +3428,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4109bea1d3ee0f448b8383471c71ae67, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveModel: {fileID: 1624229853965258469}
+  moveModel: {fileID: 2529514231564947955}
   spriteModel: {fileID: 6706278731995439938}
-  NPCEventModel: {fileID: 3936912849927213834}
+  npcEventModel: {fileID: 3936912849927213834}
 --- !u!1 &4210704742927573234
 GameObject:
   m_ObjectHideFlags: 0
@@ -4612,9 +4618,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4109bea1d3ee0f448b8383471c71ae67, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveModel: {fileID: 2803726375255272454}
+  moveModel: {fileID: 5630436295601008914}
   spriteModel: {fileID: 6331738665669786723}
-  NPCEventModel: {fileID: 6289126291394079991}
+  npcEventModel: {fileID: 6289126291394079991}
 --- !u!1 &7474864768374987699
 GameObject:
   m_ObjectHideFlags: 0
@@ -5121,6 +5127,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a30693a1d358e25489fedaebf9b1eea4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  targetMap: 0
   targetPosition: {x: 14.5, y: -3.5}
   targetLayer: 0
 --- !u!1 &8683631018904902692

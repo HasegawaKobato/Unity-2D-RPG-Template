@@ -39,17 +39,17 @@ public class MoveModel : CharacterModelBase
     [NonSerialized] public UnityEvent<Collision2D> onColiisionEnter = new UnityEvent<Collision2D>();
 
     [Tooltip("每步的距離，取絕對值。(0, 0)表示無最小步數，可以隨意移動")]
-    [SerializeField] private MoveDirect defaultDirect = MoveDirect.Down;
-    [SerializeField] private float perStepDistance = 1;
-    [SerializeField] private bool canMoveAnywhere = false;
-    // [SerializeField] private List<MovableTilemap> movableTilemaps = new List<MovableTilemap>();
-    [SerializeField] private float moveSpeed = 10;
+    [SerializeField] protected MoveDirect defaultDirect = MoveDirect.Down;
+    [SerializeField] protected float perStepDistance = 1;
+    [SerializeField] protected bool canMoveAnywhere = false;
+    // [SerializeField] protected List<MovableTilemap> movableTilemaps = new List<MovableTilemap>();
+    [SerializeField] protected float moveSpeed = 10;
 
-    private MovePlace _placeCollider = null;
+    protected MovePlace _placeCollider = null;
     /// <summary>
     /// 移動用的佔位用碰撞器
     /// </summary>
-    private MovePlace placeCollider
+    protected MovePlace placeCollider
     {
         get
         {
@@ -66,32 +66,32 @@ public class MoveModel : CharacterModelBase
         }
     }
 
-    private Dictionary<int, TileMap> movableColliderMap = new Dictionary<int, TileMap>();
+    protected Dictionary<int, TileMap> movableColliderMap = new Dictionary<int, TileMap>();
 
     /// <summary>
     /// 決定目標位置時的當前位置
     /// </summary>
-    private Vector2 previousPosition = Vector2.zero;
+    protected Vector2 previousPosition = Vector2.zero;
 
     /// <summary>
     /// 目標位置
     /// </summary>
-    private Vector2 targetPosition = Vector2.zero;
+    protected Vector2 targetPosition = Vector2.zero;
 
     /// <summary>
     /// 移動方向
     /// </summary>
-    private MoveDirect moveDirect = MoveDirect.None;
+    protected MoveDirect moveDirect = MoveDirect.None;
 
     /// <summary>
     /// 角色面向
     /// </summary>
-    private MoveDirect directiion = MoveDirect.None;
+    protected MoveDirect directiion = MoveDirect.None;
 
-    private List<RaycastHit2D> results = new List<RaycastHit2D>();
+    protected List<RaycastHit2D> results = new List<RaycastHit2D>();
 
-    private int layer = 0;
-    private bool isRunning = false;
+    protected int layer = 0;
+    protected bool isRunning = false;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     protected override void Awake()

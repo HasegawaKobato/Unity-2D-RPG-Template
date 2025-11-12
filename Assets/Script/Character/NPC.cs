@@ -2,9 +2,13 @@ using UnityEngine;
 
 public class NPC : MapCharacterBase
 {
-    [SerializeField] private MoveModel moveModel = null;
+    public NPCMoveModel MoveModel => moveModel;
+    public SpriteModel SpriteModel => spriteModel;
+    public NPCEventModel NPCEventModel => npcEventModel;
+
+    [SerializeField] private NPCMoveModel moveModel = null;
     [SerializeField] private SpriteModel spriteModel = null;
-    [SerializeField] private NPCEventModel NPCEventModel = null;
+    [SerializeField] private NPCEventModel npcEventModel = null;
 
     private float delayTime = 0;
     private float timer = 0;
