@@ -42,7 +42,7 @@ public class MoveModel : CharacterModelBase
     [SerializeField] private MoveDirect defaultDirect = MoveDirect.Down;
     [SerializeField] private float perStepDistance = 1;
     [SerializeField] private bool canMoveAnywhere = false;
-    [SerializeField] private List<MovableTilemap> movableTilemaps = new List<MovableTilemap>();
+    // [SerializeField] private List<MovableTilemap> movableTilemaps = new List<MovableTilemap>();
     [SerializeField] private float moveSpeed = 10;
 
     private MovePlace _placeCollider = null;
@@ -100,17 +100,6 @@ public class MoveModel : CharacterModelBase
 
         directiion = defaultDirect;
         onDirectionChanged.Invoke(directiion);
-
-        if (!canMoveAnywhere)
-        {
-            movableTilemaps.ForEach(tilemap =>
-            {
-                if (!movableColliderMap.ContainsKey(tilemap.layer))
-                {
-                    movableColliderMap.Add(tilemap.layer, tilemap.tileMap);
-                }
-            });
-        }
     }
 
     // Update is called once per frame
@@ -146,6 +135,20 @@ public class MoveModel : CharacterModelBase
     {
         base.Init(characterBase);
         SetLayer(layer);
+    }
+
+    public void InitTileMap(List<TileMap> tileMaps)
+    {
+        if (!canMoveAnywhere)
+        {
+            tileMaps.ForEach(tilemap =>
+            {
+                if (!movableColliderMap.ContainsKey(tilemap.Layer))
+                {
+                    movableColliderMap.Add(tilemap.Layer, tilemap);
+                }
+            });
+        }
     }
 
     public void UpdateTargetPosition(Vector2 _targetPosition)
@@ -204,25 +207,7 @@ public class MoveModel : CharacterModelBase
 
         if (tag == "PlayerModel")
         {
-            applyCharacter.GetComponent<Player>().spriteModel.spriteRenderer.sortingOrder = layer;
-
-            movableTilemaps.ForEach(setting =>
-            {
-                if (setting.layer > layer)
-                {
-                    setting.tileMap.GetComponentsInChildren<Tilemap>(true).ToList().ForEach(map =>
-                    {
-                        map.color = new Color(1, 1, 1, 0.5f);
-                    });
-                }
-                else
-                {
-                    setting.tileMap.GetComponentsInChildren<Tilemap>(true).ToList().ForEach(map =>
-                    {
-                        map.color = Color.white;
-                    });
-                }
-            });
+            applyCharacter.GetComponent<Player>().SpriteModel.spriteRenderer.sortingOrder = layer;
         }
     }
 
@@ -271,7 +256,7 @@ public class MoveModel : CharacterModelBase
         bool isCast = false;
         results.ForEach(result =>
         {
-            if (result.collider.Equals(TileMapSetting.compositeCollider2D)) isCast = true;
+            if (result.collider.Equals(TileMapSetting.BorderCollider2D)) isCast = true;
             if (result.collider.tag == "NPCModel" || result.collider.tag == "PlayerModel")
             {
                 MoveModel moveModel = result.collider.GetComponent<MoveModel>();
@@ -296,11 +281,6 @@ public class MoveModel : CharacterModelBase
 
         });
         return isCast;
-    }
-
-    private bool isCastingInLayer()
-    {
-        return results.FindIndex(result => result.collider.Equals(TileMapSetting.compositeCollider2D)) != -1;
     }
 
 }

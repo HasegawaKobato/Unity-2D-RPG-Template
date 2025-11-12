@@ -5,12 +5,17 @@ using UnityEngine.Tilemaps;
 [RequireComponent(typeof(CompositeCollider2D))]
 public class TileMap : MonoBehaviour
 {
-    [SerializeField] public TilemapCollider2D movableTilemap;
+    public int Layer => layer;
 
-    [NonSerialized] public CompositeCollider2D compositeCollider2D = null;
+    public TilemapCollider2D MovableTilemap => movableTilemap;
 
-    void Start()
-    {
-        compositeCollider2D = GetComponent<CompositeCollider2D>();
-    }
+    /// <summary>
+    /// 地圖外圍的邊界碰撞器
+    /// </summary>
+    public CompositeCollider2D BorderCollider2D => borderCollider2D;
+
+    [SerializeField] private int layer = 0;
+    [SerializeField] private TilemapCollider2D movableTilemap;
+    [SerializeField] private CompositeCollider2D borderCollider2D;
+
 }

@@ -43,6 +43,12 @@ public class NPC : MapCharacterBase
         NPCEventModel.TryTriggerEvent(eventModelPosition, playerMoveModel);
     }
 
+    public override void ApplyMap(MapUnit mapUnit)
+    {
+        locateMap = mapUnit;
+        moveModel.InitTileMap(mapUnit.Maps);
+    }
+
     private void delayRandomTime()
     {
         timer = Time.time;

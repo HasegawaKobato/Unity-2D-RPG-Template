@@ -80,7 +80,7 @@ public class NPCEventModel : CharacterModelBase
         {
             if (collision.collider.transform.parent.gameObject.tag == "Player")
             {
-                if (Vector2.Distance(transform.position, collision.collider.transform.parent.GetComponent<Player>().eventModel.transform.position) < 1)
+                if (Vector2.Distance(transform.position, collision.collider.transform.parent.GetComponent<Player>().EventModel.transform.position) < 1)
                 {
                     onTouchTrigger?.Invoke();
                 }

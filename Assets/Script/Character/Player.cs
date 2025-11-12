@@ -12,9 +12,13 @@ public enum MoveDirect
 
 public class Player : MapCharacterBase
 {
-    public MoveModel moveModel = null;
-    public EventModel eventModel = null;
-    public SpriteModel spriteModel = null;
+    public MoveModel MoveModel => moveModel;
+    public EventModel EventModel => eventModel;
+    public SpriteModel SpriteModel => spriteModel;
+
+    [SerializeField] private MoveModel moveModel = null;
+    [SerializeField] private EventModel eventModel = null;
+    [SerializeField] private SpriteModel spriteModel = null;
 
     private Vector2 moveOffset = Vector2.zero;
 
@@ -45,6 +49,12 @@ public class Player : MapCharacterBase
         if (moveOffset.y > 0) moveModel.Move(MoveDirect.Up);
         if (moveOffset.y < 0) moveModel.Move(MoveDirect.Down);
 
+    }
+
+    public override void ApplyMap(MapUnit mapUnit)
+    {
+        locateMap = mapUnit;
+        moveModel.InitTileMap(mapUnit.Maps);
     }
 
     private void onClickInteract(InputAction.CallbackContext context)
